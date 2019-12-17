@@ -1,8 +1,23 @@
+function pipeWrapper(func) {
+  Object.defineProperty(func, 'pipe', {
+    value(nextFunc) {
+      if (typeof nextFunc !== 'function') {
+        return func;
+      }
+      return pipeWrapper((...args) => {
+        func(...args);
+        nextFunc(...args);
+      });
+    },
+  });
+  return func;
+}
 export default function useKeyDown(code, callback) {
   let isMeta = false;
   let isShift = false;
   let isAlt = false;
   let isCtrl = false;
+
   let isPrevent = false;
   /**
    *
@@ -11,16 +26,17 @@ export default function useKeyDown(code, callback) {
   function onKeyDown(e) {
     switch (e.key.toLowerCase()) {
       case code: {
-        if (isMeta && !e.metaKey) {
+        // as same as isMeta && !e.metaKey || !isMeta && e.metaKey
+        if (isMeta ^ e.metaKey) {
           return;
         }
-        if (isShift && !e.shiftKey) {
+        if (isShift ^ e.shiftKey) {
           return;
         }
-        if (isAlt && !e.altKey) {
+        if (isAlt ^ e.altKey) {
           return;
         }
-        if (isCtrl && !e.ctrlKey) {
+        if (isCtrl ^ e.ctrlKey) {
           return;
         }
         if (isPrevent) {
@@ -63,13 +79,5 @@ export default function useKeyDown(code, callback) {
       return onKeyDown;
     },
   });
-  Object.defineProperty(onKeyDown, 'pipe', {
-    value(func) {
-      return e => {
-        this(e);
-        func(e);
-      };
-    },
-  });
-  return onKeyDown;
+  return pipeWrapper(onKeyDown);
 }
