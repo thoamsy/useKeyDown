@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 function pipeWrapper(func) {
   Object.defineProperty(func, 'pipe', {
     value(nextFunc) {
@@ -13,12 +15,11 @@ function pipeWrapper(func) {
   return func;
 }
 export default function useKeyDown(code, callback) {
-  let isMeta = false;
-  let isShift = false;
-  let isAlt = false;
-  let isCtrl = false;
-
-  let isPrevent = false;
+  const isMeta = useRef(false);
+  const isShift = useRef(false);
+  const isAlt = useRef(false);
+  const isCtrl = useRef(false);
+  const isPrevent = useRef(false);
   /**
    *
    * @param {React.KeyboardEvent} e
@@ -27,19 +28,19 @@ export default function useKeyDown(code, callback) {
     switch (e.key.toLowerCase()) {
       case code: {
         // as same as isMeta && !e.metaKey || !isMeta && e.metaKey
-        if (isMeta ^ e.metaKey) {
+        if (isMeta.current ^ e.metaKey) {
           return;
         }
-        if (isShift ^ e.shiftKey) {
+        if (isShift.current ^ e.shiftKey) {
           return;
         }
-        if (isAlt ^ e.altKey) {
+        if (isAlt.current ^ e.altKey) {
           return;
         }
-        if (isCtrl ^ e.ctrlKey) {
+        if (isCtrl.current ^ e.ctrlKey) {
           return;
         }
-        if (isPrevent) {
+        if (isPrevent.current) {
           e.preventDefault();
         }
         callback(e);
@@ -52,31 +53,31 @@ export default function useKeyDown(code, callback) {
   Object.defineProperties(onKeyDown, {
     prevent: {
       get() {
-        isMeta = true;
+        isPrevent.current = true;
         return this;
       },
     },
     meta: {
       get() {
-        isMeta = true;
+        isMeta.current = true;
         return this;
       },
     },
     shift: {
       get() {
-        isShift = true;
+        isShift.current = true;
         return this;
       },
     },
     alt: {
       get() {
-        isAlt = true;
+        isAlt.current = true;
         return this;
       },
     },
     ctrl: {
       get() {
-        isCtrl = true;
+        isCtrl.current = true;
         return this;
       },
     },
