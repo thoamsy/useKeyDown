@@ -1,11 +1,10 @@
 # useKeyDown
 
-用来快速注册键盘事件，提升 PC 用户幸福感。
+Use it to register keyboard event quickly, coding happy. 🥰
 
-## 开始开始
+## Quick Start
 
-类似 vue 的写法，对返回的函数添加修饰属性，就能支持是否只有在按下特定修饰按钮的时候才触发。
-如果你想注册多个事件，可以通过 `pipe` 来串联起来，`a.pipe(b)` 就类似 `a(); b();`
+Take is Cheap, below is the code.
 
 ```jsx
 export default function App() {
@@ -35,6 +34,6 @@ export default function App() {
 }
 ```
 
-## 参数说明
+## Args
 
-支持的修饰词: `ctrl, meta, alt, shift, prevent`。 没什么好解释的
+Supports:  `ctrl, meta, alt, shift, prevent`。
