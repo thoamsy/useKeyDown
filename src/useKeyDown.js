@@ -42,41 +42,43 @@ export default function useKeyDown(code, callback) {
         if (isPrevent) {
           e.preventDefault();
         }
-        callback();
+        callback(e);
         break;
       }
       default:
         break;
     }
   }
-  Object.defineProperty(onKeyDown, 'prevent', {
-    get() {
-      isMeta = true;
-      return onKeyDown;
+  Object.defineProperties(onKeyDown, {
+    prevent: {
+      get() {
+        isMeta = true;
+        return this;
+      },
     },
-  });
-  Object.defineProperty(onKeyDown, 'meta', {
-    get() {
-      isMeta = true;
-      return onKeyDown;
+    meta: {
+      get() {
+        isMeta = true;
+        return this;
+      },
     },
-  });
-  Object.defineProperty(onKeyDown, 'shift', {
-    get() {
-      isShift = true;
-      return onKeyDown;
+    shift: {
+      get() {
+        isShift = true;
+        return this;
+      },
     },
-  });
-  Object.defineProperty(onKeyDown, 'alt', {
-    get() {
-      isAlt = true;
-      return onKeyDown;
+    alt: {
+      get() {
+        isAlt = true;
+        return this;
+      },
     },
-  });
-  Object.defineProperty(onKeyDown, 'ctrl', {
-    get() {
-      isCtrl = true;
-      return onKeyDown;
+    ctrl: {
+      get() {
+        isCtrl = true;
+        return this;
+      },
     },
   });
   return pipeWrapper(onKeyDown);
