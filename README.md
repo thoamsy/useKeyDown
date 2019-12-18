@@ -37,3 +37,17 @@ export default function App() {
 ## Args
 
 Supports:  `ctrl, meta, alt, shift, prevent`。
+
+
+## Others
+
+### Why not typescript?
+
+I don't know how to tell the tsc don't complain, I hate it!
+
+
+### Why not memo the returns callback
+
+1. memo doesn't improve the performance in our hooks
+2. I don't know memo what args, `callback`? But some people always like write callback inline, like `useKeyDown('f', () => { toggleSomething() })`, it's useless
+3. if you like, you can `useCallback(useKeyDown('f', something), [])`
