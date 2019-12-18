@@ -17,14 +17,13 @@ function pipeWrapper(func) {
   return func;
 }
 
-const dontLaunchInType = (code: string) => /^[a-z\\,./;']$/.test(code);
+const dontLaunchInType = (code = '') => /^[a-z\\,./;']$/.test(code);
 
 /**
  *
  * @param {string} code  bind keyboard
  * @param {function} callback keyboard event callback
- * @returns {{meta: boolean, shift: boolean, alt: boolean, ctrl: boolean, prevent: boolean, pipe: function}}
- *
+ * @returns {import('../useKeyDown').onKeyDown}
  * a function that can use be compose another keydown event
  */
 export default function useKeyDown(code, callback) {
