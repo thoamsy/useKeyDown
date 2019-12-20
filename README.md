@@ -41,11 +41,6 @@ Supports:  `ctrl, meta, alt, shift, prevent`。
 
 ## Others
 
-### Why not typescript?
-
-I don't know how to tell the tsc don't complain, I hate it!
-
-
 ### Why not memo the returns callback
 
 1. memo doesn't improve the performance in our hooks

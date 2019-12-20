@@ -2,9 +2,9 @@
 
 import { useRef } from 'react';
 
-function pipeWrapper(func) {
+function pipeWrapper(func: anyCallback) {
   Object.defineProperty(func, 'pipe', {
-    value(nextFunc) {
+    value(nextFunc: anyCallback) {
       if (typeof nextFunc !== 'function') {
         return func;
       }
@@ -17,35 +17,49 @@ function pipeWrapper(func) {
   return func;
 }
 
-const dontLaunchInType = (code = '') => /^[a-z\\,./;']$/.test(code);
+const dontLaunchInType = (code: string) => /^[a-z\\,./;']$/.test(code);
+type anyCallback = (...args: any[]) => any;
+interface OnKeyDown {
+  (...args: any[]): any;
+  readonly meta: boolean;
+  readonly shift: boolean;
+  readonly ctrl: boolean;
+  readonly alt: boolean;
+  readonly prevent: boolean;
+  pipe: (...args: any[]) => any;
+}
 
-/**
- *
- * @param {string} code  bind keyboard
- * @param {function} callback keyboard event callback
- * @returns {import('../useKeyDown').onKeyDown}
- * a function that can use be compose another keydown event
- */
-export default function useKeyDown(code, callback) {
+export default function useKeyDown(
+  code: string,
+  callback: anyCallback
+): OnKeyDown {
   const isMeta = useRef(false);
   const isShift = useRef(false);
   const isAlt = useRef(false);
   const isCtrl = useRef(false);
   const isPrevent = useRef(false);
+  const lastKey = useRef('');
+  const compose = useRef<string[]>([]);
 
-  function onKeyDown(e) {
+  // this is a hack for compose keyboard, like 'ga', 'gf'
+  if (code.length === 2) {
+    compose.current = Array.from(code);
+  }
+
+  function onKeyDown(e: React.KeyboardEvent | KeyboardEvent) {
     const tagName = document.activeElement?.tagName?.toLowerCase() ?? '';
     const canType = tagName === 'input' || tagName === 'textarea';
+    const lowerCaseKey = e.key.toLowerCase();
     if (
       canType &&
-      dontLaunchInType(code) &&
+      dontLaunchInType(lowerCaseKey) &&
       e.currentTarget !== document.activeElement
     ) {
       return;
     }
-    switch (e.key.toLowerCase()) {
+    switch (lowerCaseKey) {
       case code: {
-        // as same as isMeta.current && !e.metaKey || !isMeta.current && e.metaKey or e.metaKey ^ isMeta.current
+        // as same as isMeta && !e.metaKey || !isMeta && e.metaKey
         if (isMeta.current !== e.metaKey) {
           return;
         }
@@ -62,9 +76,22 @@ export default function useKeyDown(code, callback) {
           e.preventDefault();
         }
         callback(e);
+        lastKey.current = '';
+        break;
+      }
+      case compose.current[1]: {
+        if (lastKey.current === compose.current[0]) {
+          callback(e);
+        }
+        lastKey.current = '';
+        break;
+      }
+      case compose.current[0]: {
+        lastKey.current = compose.current[0];
         break;
       }
       default:
+        lastKey.current = '';
         break;
     }
   }
@@ -101,5 +128,5 @@ export default function useKeyDown(code, callback) {
       },
     },
   });
-  return pipeWrapper(onKeyDown);
+  return pipeWrapper(onKeyDown) as OnKeyDown;
 }
