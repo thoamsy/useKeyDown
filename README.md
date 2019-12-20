@@ -34,6 +34,17 @@ export default function App() {
 }
 ```
 
+Also, it supports compose keyboard shortcut, such as `gh`(goto home). But I don't want to support `ctrl` with them, or it will be very difficult to remember for human.
+
+```jsx
+const gotoHome = useKeyDown('gh', () => history.push('/home'));
+useEffect(() => {
+  document.body.addEventListener('keydown', gotoHome);
+  return () => {
+    document.body.addEventListener('keydown', gotoHome);
+  };
+```
+
 ## Args
 
 Supports:  `ctrl, meta, alt, shift, prevent`。
